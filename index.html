@@ -8,19 +8,21 @@
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      padding: 16px;
+      padding: 12px;
       background: #f7f7f7;
     }
 
     h1 {
-      font-size: 1.4rem;
+      font-size: 1.6rem;
       margin-bottom: 12px;
+      text-align: center;
     }
 
     .row {
       display: flex;
       justify-content: space-between;
-      padding: 10px 12px;
+      flex-wrap: wrap;       /* allow wrapping on small screens */
+      padding: 12px;
       margin-bottom: 8px;
       background: white;
       border-radius: 6px;
@@ -29,10 +31,15 @@
 
     .category {
       font-weight: 500;
+      flex: 1 1 60%;         /* take 60% width on mobile */
+      min-width: 120px;      /* prevent shrinking too small */
     }
 
     .balance {
       font-weight: 600;
+      flex: 1 1 35%;         /* take 35% width on mobile */
+      text-align: right;
+      min-width: 80px;
     }
 
     .negative {
@@ -47,6 +54,7 @@
       margin-top: 12px;
       font-size: 0.9rem;
       color: #555;
+      text-align: center;
     }
   </style>
 </head>
