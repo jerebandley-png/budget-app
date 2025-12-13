@@ -42,12 +42,19 @@
     .positive {
       color: #2e7d32;
     }
+
+    #lastUpdated {
+      margin-top: 12px;
+      font-size: 0.9rem;
+      color: #555;
+    }
   </style>
 </head>
 
 <body>
   <h1>Budget Categories</h1>
   <div id="list">Loading…</div>
+  <div id="lastUpdated"></div>
 
   <script>
     const DATA_URL =
@@ -74,6 +81,10 @@
 
           list.appendChild(div);
         });
+
+        // Show last updated timestamp
+        document.getElementById('lastUpdated').innerText =
+          'Last Updated: ' + new Date().toLocaleString();
       })
       .catch(() => {
         document.getElementById('list').innerText =
