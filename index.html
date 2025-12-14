@@ -80,12 +80,16 @@
 
           const balClass = row.Balance < 0 ? 'negative' : 'positive';
 
-          div.innerHTML = `
-            <div class="category">${row.Category}</div>
-            <div class="balance ${balClass}">
-              $${row.Balance.toFixed(2)}
-            </div>
-          `;
+div.innerHTML = `
+  <div class="category">${row.Category}</div>
+  <div class="balance ${balClass}">
+    $${row.Balance.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })}
+  </div>
+`;
+
 
           list.appendChild(div);
         });
