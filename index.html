@@ -5,109 +5,95 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Family Budget</title>
 
-<style>
-  body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    padding: 12px;
-    background: #f7f7f7;
-  }
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 12px;
+      background: #f7f7f7;
+    }
 
-  h1 {
-    font-size: 1.6rem;
-    margin-bottom: 12px;
-    text-align: center;
-  }
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 12px;
+      text-align: center;
+    }
 
-  /* Row container */
-  .row {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    margin-bottom: 8px;
-    background: white;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  }
+    .row {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      margin-bottom: 8px;
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
 
-  /* Category column */
-.category {
-  flex: 1;
-  font-weight: 500;
-  min-width: 140px;
-  white-space: nowrap;      /* ← prevents wrapping */
-  overflow: hidden;
-  text-overflow: ellipsis; /* ← optional: adds … if too long */
-}
+    .category {
+      flex: 1;
+      font-weight: 500;
+      min-width: 140px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
+    .numbers {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 90px;
+      gap: 12px;
+      text-align: left;
+    }
 
-  /* Right-side numbers container */
-.numbers {
-  display: grid;
-  grid-template-columns: 90px 90px;  /* FIXED widths */
-  gap: 12px;
-  text-align: left;
-}
+    .balance {
+      font-weight: 600;
+    }
 
+    .budget {
+      font-weight: 500;
+      color: #555;
+    }
 
+    .negative {
+      color: #c62828;
+    }
 
-  .balance {
-    font-weight: 600;
-  }
+    .positive {
+      color: #2e7d32;
+    }
 
-  .budget {
-    font-weight: 500;
-    color: #555;
-  }
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #f7f7f7;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
 
-  .negative {
-    color: #c62828;
-  }
-
-  .positive {
-    color: #2e7d32;
-  }
-
-/* Header row (sticky) */
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-
-  background: #f7f7f7;     /* solid background so rows don’t show through */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-
-  #lastUpdated {
-    margin-top: 12px;
-    font-size: 0.9rem;
-    color: #555;
-    text-align: center;
-  }
-</style>
-
+    #lastUpdated {
+      margin-top: 12px;
+      font-size: 0.9rem;
+      color: #555;
+      text-align: center;
+    }
+  </style>
 </head>
 
 <body>
   <h1>Family Budget</h1>
 
-  <!-- COLUMN HEADERS -->
+  <!-- HEADER ROW (FILLED DYNAMICALLY) -->
   <div class="row header">
-    <div class="category">Category</div>
-    <div class="numbers">
-      <div>Balance</div>
-      <div>2-Wk Budget</div>
-    </div>
+    <div class="category" id="headerCategory"></div>
+    <div class="numbers" id="headerNumbers"></div>
   </div>
 
-  <!-- DATA ROWS GET INSERTED HERE -->
+  <!-- DATA -->
   <div id="list">Loading…</div>
 
   <div id="lastUpdated"></div>
-
 
   <script>
     const DATA_URL =
@@ -116,42 +102,54 @@
     fetch(DATA_URL + '?v=' + Date.now())
       .then(r => r.json())
       .then(data => {
+
+        const columns = data.columns;
+        const rows = data.rows;
+
+        /* ----- HEADERS ----- */
+        document.getElementById('headerCategory').innerText = columns[0];
+
+        const headerNumbers = document.getElementById('headerNumbers');
+        headerNumbers.innerHTML = '';
+        columns.slice(1).forEach(col => {
+          const div = document.createElement('div');
+          div.innerText = col;
+          headerNumbers.appendChild(div);
+        });
+
+        /* ----- DATA ROWS ----- */
         const list = document.getElementById('list');
         list.innerHTML = '';
 
-        data.forEach(row => {
+        rows.forEach(row => {
           const div = document.createElement('div');
           div.className = 'row';
 
-          const balClass = row.Balance < 0 ? 'negative' : 'positive';
+          let html = `<div class="category">${row[columns[0]]}</div>`;
+          html += `<div class="numbers">`;
 
-div.innerHTML = `
-  <div class="category">${row.Category}</div>
+          columns.slice(1).forEach(col => {
+            const val = row[col];
+            const cls =
+              col.toLowerCase().includes('balance') && val < 0
+                ? 'negative'
+                : 'positive';
 
-  <div class="numbers">
-    <div class="balance ${balClass}">
-      $${row.Balance.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      })}
-    </div>
+            html += `
+              <div class="${col.toLowerCase().includes('balance') ? 'balance' : 'budget'} ${cls}">
+                $${val.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })}
+              </div>
+            `;
+          });
 
-    <div class="budget">
-      $${row["2Wk Budget"].toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      })}
-    </div>
-  </div>
-`;
-
-
-
-
+          html += `</div>`;
+          div.innerHTML = html;
           list.appendChild(div);
         });
 
-        // Show last updated timestamp
         document.getElementById('lastUpdated').innerText =
           'Last Updated: ' + new Date().toLocaleString();
       })
