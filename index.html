@@ -67,13 +67,19 @@
     color: #2e7d32;
   }
 
-  /* Header row */
-  .header {
-    background: transparent;
-    box-shadow: none;
-    font-weight: 600;
-    margin-bottom: 6px;
-  }
+/* Header row (sticky) */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  background: #f7f7f7;     /* solid background so rows don’t show through */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
 
   #lastUpdated {
     margin-top: 12px;
