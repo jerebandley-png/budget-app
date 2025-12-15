@@ -30,11 +30,15 @@
   }
 
   /* Category column */
-  .category {
-    flex: 1;
-    font-weight: 500;
-    min-width: 120px;
-  }
+.category {
+  flex: 1;
+  font-weight: 500;
+  min-width: 140px;
+  white-space: nowrap;      /* ← prevents wrapping */
+  overflow: hidden;
+  text-overflow: ellipsis; /* ← optional: adds … if too long */
+}
+
 
   /* Right-side numbers container */
   .numbers {
@@ -117,7 +121,7 @@
 div.innerHTML = `
   <div class="category">${row.Category}</div>
 
-  <div style="display:flex; justify-content:space-between; width:100%;">
+  <div class="numbers">
     <div class="balance ${balClass}">
       $${row.Balance.toLocaleString(undefined, {
         minimumFractionDigits: 2,
@@ -133,6 +137,7 @@ div.innerHTML = `
     </div>
   </div>
 `;
+
 
 
 
