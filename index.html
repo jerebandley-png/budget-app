@@ -5,58 +5,79 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Budget Categories</title>
 
-  <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      padding: 12px;
-      background: #f7f7f7;
-    }
+<style>
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 12px;
+    background: #f7f7f7;
+  }
 
-    h1 {
-      font-size: 1.6rem;
-      margin-bottom: 12px;
-      text-align: center;
-    }
+  h1 {
+    font-size: 1.6rem;
+    margin-bottom: 12px;
+    text-align: center;
+  }
 
-    .row {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;       /* allow wrapping on small screens */
-      padding: 12px;
-      margin-bottom: 8px;
-      background: white;
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    }
+  /* Row container */
+  .row {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 8px;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
 
-    .category {
-      font-weight: 500;
-      flex: 1 1 60%;         /* take 60% width on mobile */
-      min-width: 120px;      /* prevent shrinking too small */
-    }
+  /* Category column */
+  .category {
+    flex: 1;
+    font-weight: 500;
+    min-width: 120px;
+  }
 
-    .balance {
-      font-weight: 600;
-      flex: 1 1 35%;         /* take 35% width on mobile */
-      text-align: right;
-      min-width: 80px;
-    }
+  /* Right-side numbers container */
+  .numbers {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 12px;
+    text-align: right;
+    min-width: 160px;
+  }
 
-    .negative {
-      color: #c62828;
-    }
+  .balance {
+    font-weight: 600;
+  }
 
-    .positive {
-      color: #2e7d32;
-    }
+  .budget {
+    font-weight: 500;
+    color: #555;
+  }
 
-    #lastUpdated {
-      margin-top: 12px;
-      font-size: 0.9rem;
-      color: #555;
-      text-align: center;
-    }
-  </style>
+  .negative {
+    color: #c62828;
+  }
+
+  .positive {
+    color: #2e7d32;
+  }
+
+  /* Header row */
+  .header {
+    background: transparent;
+    box-shadow: none;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  #lastUpdated {
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: #555;
+    text-align: center;
+  }
+</style>
+
 </head>
 
 <body>
