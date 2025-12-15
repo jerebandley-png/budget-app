@@ -82,13 +82,24 @@
 
 div.innerHTML = `
   <div class="category">${row.Category}</div>
-  <div class="balance ${balClass}">
-    $${row.Balance.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })}
+
+  <div style="display:flex; justify-content:space-between; width:100%;">
+    <div class="balance ${balClass}">
+      $${row.Balance.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })}
+    </div>
+
+    <div class="budget">
+      $${row["2Wk Budget"].toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })}
+    </div>
   </div>
 `;
+
 
 
           list.appendChild(div);
