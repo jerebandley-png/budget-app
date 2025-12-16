@@ -95,82 +95,79 @@
 
   <div id="lastUpdated"></div>
 
-  <script>
-    const DATA_URL =
-      'https://jerebandley-png.github.io/budget-app/budget_categories.json';
+ <script>
+  const DATA_URL =
+    'https://jerebandley-png.github.io/budget-app/budget_categories.json';
 
-    fetch(DATA_URL + '?v=' + Date.now())
-      .then(r => r.json())
-      .then(data => {
+  fetch(DATA_URL + '?v=' + Date.now())
+    .then(r => r.json())
+    .then(data => {
 
-.then(data => {
+      const columns = data.columns;
+      const rows = data.rows;
 
-  const columns = data.columns;
-  const rows = data.rows;
+      // Columns you want to display (Excel-safe)
+      const displayColumns = [
+        "Category",
+        "Balance",
+        "2Wk Budget"
+      ];
 
-  // 👇 ADD THIS BLOCK RIGHT HERE
-  const displayColumns = [
-    "Category",
-    "Balance",
-    "2Wk Budget"
-  ];
+      /* ----- HEADERS ----- */
+      document.getElementById('headerCategory').innerText = displayColumns[0];
 
-  /* ----- HEADERS ----- */
-  document.getElementById('headerCategory').innerText = displayColumns[0];
+      const headerNumbers = document.getElementById('headerNumbers');
+      headerNumbers.innerHTML = '';
 
+      displayColumns.slice(1).forEach(col => {
+        const div = document.createElement('div');
+        div.innerText = col;
+        headerNumbers.appendChild(div);
+      });
 
-const headerNumbers = document.getElementById('headerNumbers');
-headerNumbers.innerHTML = '';
+      /* ----- DATA ROWS ----- */
+      const list = document.getElementById('list');
+      list.innerHTML = '';
 
-displayColumns.slice(1).forEach(col => {
-  const div = document.createElement('div');
-  div.innerText = col;
-  headerNumbers.appendChild(div);
-});
+      rows.forEach(row => {
+        const div = document.createElement('div');
+        div.className = 'row';
 
+        let html = `<div class="category">${row[displayColumns[0]]}</div>`;
+        html += `<div class="numbers">`;
 
-        /* ----- DATA ROWS ----- */
-        const list = document.getElementById('list');
-        list.innerHTML = '';
+        displayColumns.slice(1).forEach(col => {
+          const val = row[col];
 
-        rows.forEach(row => {
-          const div = document.createElement('div');
-          div.className = 'row';
+          const cls =
+            col.toLowerCase().includes('balance') && val < 0
+              ? 'negative'
+              : 'positive';
 
-let html = `<div class="category">${row[displayColumns[0]]}</div>`;
-html += `<div class="numbers">`;
-
-displayColumns.slice(1).forEach(col => {
-  const val = row[col];
-
-  const cls =
-    col.toLowerCase().includes('balance') && val < 0
-      ? 'negative'
-      : 'positive';
-
-  html += `
-    <div class="${col.toLowerCase().includes('balance') ? 'balance' : 'budget'} ${cls}">
-      $${val.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      })}
-    </div>
-  `;
-});
-
-
-          html += `</div>`;
-          div.innerHTML = html;
-          list.appendChild(div);
+          html += `
+            <div class="${col.toLowerCase().includes('balance') ? 'balance' : 'budget'} ${cls}">
+              $${val.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })}
+            </div>
+          `;
         });
 
-        document.getElementById('lastUpdated').innerText =
-          'Last Updated: ' + new Date().toLocaleString();
-      })
-      .catch(() => {
-        document.getElementById('list').innerText =
-          'Failed to load data';
+        html += `</div>`;
+        div.innerHTML = html;
+        list.appendChild(div);
       });
-  </script>
+
+      document.getElementById('lastUpdated').innerText =
+        'Last Updated: ' + new Date().toLocaleString();
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById('list').innerText =
+        'Failed to load data';
+    });
+</script>
+
 </body>
 </html>
