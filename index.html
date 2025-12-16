@@ -99,6 +99,14 @@
     </div>
   </div>
 
+  <!-- SUMMARY ROW (Adjusted Savings) -->
+  <div class="row" id="adjustedSavingsRow">
+    <div class="category">Adjusted Savings</div>
+    <div class="numbers">
+      <div class="budget" id="adjustedSavings">$0.00</div>
+    </div>
+  </div>
+
   <!-- DATA -->
   <div id="list">Loading…</div>
 
@@ -140,6 +148,13 @@
       }, 0);
       document.getElementById('savingsDeficit').innerText =
         `$${Math.abs(totalNegative).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+
+      /* ----- Calculate Adjusted Savings ----- */
+      const savingsRow = rows.find(r => r["Category"] === "Savings");
+      const savingsBalance = savingsRow ? savingsRow["Balance"] : 0;
+      const adjusted = savingsBalance - Math.abs(totalNegative);
+      document.getElementById('adjustedSavings').innerText =
+        `$${adjusted.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
 
       /* ----- DATA ROWS ----- */
       const list = document.getElementById('list');
