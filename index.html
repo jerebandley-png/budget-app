@@ -62,6 +62,10 @@
       color: #2e7d32;
     }
 
+    .purple {
+      color: purple;
+    }
+
     .header {
       position: sticky;
       top: 0;
@@ -91,22 +95,6 @@
     <div class="numbers" id="headerNumbers"></div>
   </div>
 
-  <!-- SUMMARY ROW (Savings Deficit) -->
-  <div class="row" id="summaryRow">
-    <div class="category">Savings Deficit</div>
-    <div class="numbers">
-      <div class="balance negative" id="savingsDeficit">$0.00</div>
-    </div>
-  </div>
-
-  <!-- SUMMARY ROW (Adjusted Savings) -->
-  <div class="row" id="adjustedSavingsRow">
-    <div class="category">Adjusted Savings</div>
-    <div class="numbers">
-      <div class="budget" id="adjustedSavings">$0.00</div>
-    </div>
-  </div>
-
   <!-- DATA -->
   <div id="list">Loading…</div>
 
@@ -132,7 +120,6 @@
 
       /* ----- HEADERS ----- */
       document.getElementById('headerCategory').innerText = displayColumns[0];
-
       const headerNumbers = document.getElementById('headerNumbers');
       headerNumbers.innerHTML = '';
       displayColumns.slice(1).forEach(col => {
@@ -146,40 +133,50 @@
         const val = row["Balance"];
         return sum + (val < 0 ? val : 0);
       }, 0);
-      document.getElementById('savingsDeficit').innerText =
-        `$${Math.abs(totalNegative).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
 
-      /* ----- Calculate Adjusted Savings ----- */
+      /* ----- Get Savings Row and Adjusted Savings ----- */
       const savingsRow = rows.find(r => r["Category"] === "Savings");
       const savingsBalance = savingsRow ? savingsRow["Balance"] : 0;
-      const adjusted = savingsBalance - Math.abs(totalNegative);
-      document.getElementById('adjustedSavings').innerText =
-        `$${adjusted.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+      const adjustedSavings = savingsBalance - Math.abs(totalNegative);
+
+      /* ----- Rebuild rows array to include summary at the top ----- */
+      const summaryRows = [
+        { Category: "Savings", Balance: savingsBalance },
+        { Category: "Savings Deficit", Balance: totalNegative },
+        { Category: "Adjusted Savings", Balance: adjustedSavings }
+      ];
+
+      // Filter out the original Savings row to avoid duplicate
+      const filteredRows = rows.filter(r => r["Category"] !== "Savings");
+      const finalRows = [...summaryRows, ...filteredRows];
 
       /* ----- DATA ROWS ----- */
       const list = document.getElementById('list');
       list.innerHTML = '';
 
-      rows.forEach(row => {
+      finalRows.forEach(row => {
         const div = document.createElement('div');
         div.className = 'row';
 
-        let html = `<div class="category">${row[displayColumns[0]]}</div>`;
+        let html = `<div class="category">${row["Category"]}</div>`;
         html += `<div class="numbers">`;
 
         displayColumns.slice(1).forEach(col => {
-          const val = row[col];
+          let val = row[col] !== undefined ? row[col] : (col === "Balance" ? row["Balance"] : 0);
           let cls = '';
-          if (col.toLowerCase().includes('balance')) {
+
+          // Apply color rules
+          if (row["Category"] === "Savings Deficit") {
+            cls = val < 0 ? 'negative' : 'positive';
+          } else if (row["Category"] === "Adjusted Savings") {
+            cls = val < 0 ? 'negative' : 'purple';
+          } else if (col.toLowerCase().includes('balance')) {
             cls = val < 0 ? 'negative' : 'positive';
           }
 
           html += `
             <div class="${col.toLowerCase().includes('balance') ? 'balance' : 'budget'} ${cls}">
-              $${val.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-              })}
+              $${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
           `;
         });
