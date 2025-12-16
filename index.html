@@ -139,10 +139,12 @@
         displayColumns.slice(1).forEach(col => {
           const val = row[col];
 
-          const cls =
-            col.toLowerCase().includes('balance') && val < 0
-              ? 'negative'
-              : 'positive';
+let cls = '';
+
+if (col.toLowerCase().includes('balance')) {
+  cls = val < 0 ? 'negative' : 'positive';
+}
+
 
           html += `
             <div class="${col.toLowerCase().includes('balance') ? 'balance' : 'budget'} ${cls}">
