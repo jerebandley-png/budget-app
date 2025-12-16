@@ -85,10 +85,18 @@
 <body>
   <h1>Family Budget</h1>
 
-  <!-- HEADER ROW (FILLED DYNAMICALLY) -->
+  <!-- HEADER ROW -->
   <div class="row header">
     <div class="category" id="headerCategory"></div>
     <div class="numbers" id="headerNumbers"></div>
+  </div>
+
+  <!-- SUMMARY ROW (Savings Deficit) -->
+  <div class="row" id="summaryRow">
+    <div class="category">Savings Deficit</div>
+    <div class="numbers">
+      <div class="balance negative" id="savingsDeficit">$0.00</div>
+    </div>
   </div>
 
   <!-- DATA -->
@@ -96,7 +104,7 @@
 
   <div id="lastUpdated"></div>
 
- <script>
+<script>
   const DATA_URL =
     'https://jerebandley-png.github.io/budget-app/budget_categories.json';
 
@@ -107,7 +115,7 @@
       const columns = data.columns;
       const rows = data.rows;
 
-      // Columns you want to display (Excel-safe)
+      // Columns you want to display
       const displayColumns = [
         "Category",
         "Balance",
@@ -119,12 +127,19 @@
 
       const headerNumbers = document.getElementById('headerNumbers');
       headerNumbers.innerHTML = '';
-
       displayColumns.slice(1).forEach(col => {
         const div = document.createElement('div');
         div.innerText = col;
         headerNumbers.appendChild(div);
       });
+
+      /* ----- Calculate Savings Deficit ----- */
+      const totalNegative = rows.reduce((sum, row) => {
+        const val = row["Balance"];
+        return sum + (val < 0 ? val : 0);
+      }, 0);
+      document.getElementById('savingsDeficit').innerText =
+        `$${Math.abs(totalNegative).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
 
       /* ----- DATA ROWS ----- */
       const list = document.getElementById('list');
@@ -139,13 +154,10 @@
 
         displayColumns.slice(1).forEach(col => {
           const val = row[col];
-
-let cls = '';
-
-if (col.toLowerCase().includes('balance')) {
-  cls = val < 0 ? 'negative' : 'positive';
-}
-
+          let cls = '';
+          if (col.toLowerCase().includes('balance')) {
+            cls = val < 0 ? 'negative' : 'positive';
+          }
 
           html += `
             <div class="${col.toLowerCase().includes('balance') ? 'balance' : 'budget'} ${cls}">
@@ -164,6 +176,7 @@ if (col.toLowerCase().includes('balance')) {
 
       document.getElementById('lastUpdated').innerText =
         'Last Updated: ' + new Date().toLocaleString();
+
     })
     .catch(err => {
       console.error(err);
