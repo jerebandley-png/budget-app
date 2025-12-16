@@ -112,11 +112,7 @@
       const rows = data.rows;
 
       // Columns you want to display
-      const displayColumns = [
-        "Category",
-        "Balance",
-        "Per Paycheck"
-      ];
+      const displayColumns = ["Category", "Balance", "Per Paycheck"];
 
       /* ----- HEADERS ----- */
       document.getElementById('headerCategory').innerText = displayColumns[0];
@@ -137,11 +133,12 @@
       /* ----- Get Savings Row and Adjusted Savings ----- */
       const savingsRow = rows.find(r => r["Category"] === "Savings");
       const savingsBalance = savingsRow ? savingsRow["Balance"] : 0;
+      const savingsPerPaycheck = savingsRow ? savingsRow["Per Paycheck"] : 0;
       const adjustedSavings = savingsBalance - Math.abs(totalNegative);
 
       /* ----- Rebuild rows array to include summary at the top ----- */
       const summaryRows = [
-        { Category: "Savings", Balance: savingsBalance },
+        { Category: "Savings", Balance: savingsBalance, "Per Paycheck": savingsPerPaycheck },
         { Category: "Savings Deficit", Balance: totalNegative },
         { Category: "Adjusted Savings", Balance: adjustedSavings }
       ];
@@ -162,7 +159,7 @@
         html += `<div class="numbers">`;
 
         displayColumns.slice(1).forEach(col => {
-          let val = row[col] !== undefined ? row[col] : (col === "Balance" ? row["Balance"] : 0);
+          let val = row[col] !== undefined ? row[col] : '';
           let cls = '';
 
           // Apply color rules
@@ -170,13 +167,13 @@
             cls = val < 0 ? 'negative' : 'positive';
           } else if (row["Category"] === "Adjusted Savings") {
             cls = val < 0 ? 'negative' : 'purple';
-          } else if (col.toLowerCase().includes('balance')) {
+          } else if (col === "Balance") {
             cls = val < 0 ? 'negative' : 'positive';
           }
 
           html += `
-            <div class="${col.toLowerCase().includes('balance') ? 'balance' : 'budget'} ${cls}">
-              $${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            <div class="${col === "Balance" ? 'balance' : 'budget'} ${cls}">
+              ${val !== '' ? `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : ''}
             </div>
           `;
         });
